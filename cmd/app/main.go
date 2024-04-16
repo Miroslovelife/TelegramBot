@@ -2,13 +2,21 @@ package main
 
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/joho/godotenv"
 	telegram_bot "goTgExample/pkg/telegram-bot"
 	"log"
+	"os"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 
-	bot, err := tgbotapi.NewBotAPI("7112358443:AAGEHc7znXEpAXMyOpk1AKaKlIjE9MbjJ5M")
+	tgApi := os.Getenv("TELEGRAM_API_KEY")
+
+	bot, err := tgbotapi.NewBotAPI(tgApi)
 	if err != nil {
 		log.Panic(err)
 	}

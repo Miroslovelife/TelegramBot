@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/joho/godotenv"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 )
 
 func handleTelegramText(text string) Response {
@@ -31,12 +33,17 @@ func handleTelegramText(text string) Response {
 }
 
 func sendPrompt(prompt []byte) ([]byte, error) {
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	yandexApi := os.Getenv("YANDEX_API_KEY")
 	req, err := http.NewRequest("POST", foundationModelsUrl, bytes.NewBuffer(prompt))
 	if err != nil {
 		log.Panic()
 	}
 
-	req.Header.Set("Authorization", "Api-Key AQVNySxYTJWaH3Kw-h1hHKI3EegY6XVbca-06Bz_")
+	req.Header.Set("Authorization", yandexApi)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -73,9 +80,7 @@ func responseUnmarshal(responseJson []byte) (Response, error) {
 
 func SendResponseText(text string) string {
 	response := handleTelegramText(text)
-
 	responseText := response.Result.Alternatives[0].Message.Text
 
 	return responseText
-
 }
