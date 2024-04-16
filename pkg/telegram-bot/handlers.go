@@ -2,30 +2,33 @@ package telegram_bot
 
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	yandex_gpt "goTgExample/pkg/yandex-gpt"
 	"log"
 )
 
 const commandStrat = "start"
 
-func (b *Bot) handleCommand(message *tgbotapi.Message) {
+func (b *Bot) handleCommand(message *tgbotapi.Message) error {
+
+	msg := tgbotapi.NewMessage(message.Chat.ID, "Такой команды нет")
 	switch message.Command() {
 	case commandStrat:
-		msg := tgbotapi.NewMessage(message.Chat.ID, "Ты ввел команду /start")
-
-		b.bot.Send(msg)
+		msg.Text = "Вы ввели команду /start"
+		_, err := b.bot.Send(msg)
+		return err
 	default:
-		msg := tgbotapi.NewMessage(message.Chat.ID, "Такой команды нет")
+		_, err := b.bot.Send(msg)
+		return err
 
-		b.bot.Send(msg)
 	}
 
 }
 
 func (b *Bot) handleMessage(message *tgbotapi.Message) {
-	log.Printf("[%s] %s", message.From.UserName, message.Text)
+	log.Printf("[%s]", message.Text)
+	yandexGptResponse := yandex_gpt.SendResponseText(message.Text)
 
-	msg := tgbotapi.NewMessage(message.Chat.ID, message.Text)
-
+	msg := tgbotapi.NewMessage(message.Chat.ID, yandexGptResponse)
+	msg.ParseMode = "Markdown"
 	b.bot.Send(msg)
-
 }

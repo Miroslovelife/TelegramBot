@@ -7,7 +7,6 @@ import (
 )
 
 func main() {
-	//yandex_gpt.SendMessage()
 
 	bot, err := tgbotapi.NewBotAPI("7112358443:AAGEHc7znXEpAXMyOpk1AKaKlIjE9MbjJ5M")
 	if err != nil {
