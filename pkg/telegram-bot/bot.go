@@ -15,7 +15,6 @@ func NewBot(bot *tgbotapi.BotAPI) *Bot {
 
 func (b *Bot) Start() error {
 	log.Printf("Authorized on account %s", b.bot.Self.UserName)
-	//bot, err := tgbotapi.NewBotAPI("7112358443:AAGEHc7znXEpAXMyOpk1AKaKlIjE9MbjJ5M")
 
 	updates, err := b.initUpdatesChannel()
 	if err != nil {

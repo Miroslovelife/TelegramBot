@@ -6,13 +6,13 @@ import (
 	"log"
 )
 
-const commandStrat = "start"
+const commandStart = "start"
 
 func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 
 	msg := tgbotapi.NewMessage(message.Chat.ID, "Такой команды нет")
 	switch message.Command() {
-	case commandStrat:
+	case commandStart:
 		msg.Text = "Вы ввели команду /start"
 		_, err := b.bot.Send(msg)
 		return err
@@ -26,7 +26,7 @@ func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 
 func (b *Bot) handleMessage(message *tgbotapi.Message) {
 	log.Printf("[%s]", message.Text)
-	yandexGptResponse := yandex_gpt.SendResponseText(message.Text)
+	yandexGptResponse := yandex_gpt.GetResponseText(message.Text)
 
 	msg := tgbotapi.NewMessage(message.Chat.ID, yandexGptResponse)
 	msg.ParseMode = "Markdown"

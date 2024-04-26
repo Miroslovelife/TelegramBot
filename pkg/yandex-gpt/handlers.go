@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/joho/godotenv"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -13,18 +13,16 @@ import (
 
 func handleTelegramText(text string) Response {
 	msg := newMessage("user", text)
-	options := newOption(false, 0, "2000")
-	messages := []Message{}
-	messages = append(messages, msg)
-	prompt := newPrompt(model, options, messages)
+	prompt := createPrompt(msg)
+
 	promptJson, err := promptToJson(prompt)
 	if err != nil {
-
+		log.Fatal("Can't marshal prompt to error:", err)
 	}
 
-	responseJsonMessage, err := sendPrompt(promptJson)
+	responseJsonMessage, err := sendPromptToYandex(promptJson)
 	if err != nil {
-
+		log.Fatal("sendPrompt error:", err)
 	}
 
 	responseUnmarshalMessage, err := responseUnmarshal(responseJsonMessage)
@@ -32,7 +30,21 @@ func handleTelegramText(text string) Response {
 	return responseUnmarshalMessage
 }
 
-func sendPrompt(prompt []byte) ([]byte, error) {
+func createPrompt(msg Message) *Prompt {
+	options := newOption(false, 0, "2000")
+	messages := []Message{}
+	messages = append(messages, msg)
+
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	yandexIdCatalog := os.Getenv("YANDEX_ID_CATALOG")
+	prompt := newPrompt(yandexIdCatalog, options, messages)
+	return prompt
+}
+
+func sendPromptToYandex(prompt []byte) ([]byte, error) {
 	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
@@ -52,7 +64,7 @@ func sendPrompt(prompt []byte) ([]byte, error) {
 	}
 	defer resp.Body.Close()
 
-	body, _ := ioutil.ReadAll(resp.Body)
+	body, _ := io.ReadAll(resp.Body)
 
 	return body, nil
 
@@ -78,7 +90,7 @@ func responseUnmarshal(responseJson []byte) (Response, error) {
 	return response, nil
 }
 
-func SendResponseText(text string) string {
+func GetResponseText(text string) string {
 	response := handleTelegramText(text)
 	responseText := response.Result.Alternatives[0].Message.Text
 
