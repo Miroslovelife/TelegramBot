@@ -1,4 +1,4 @@
-package telegram_bot
+package telegram
 
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
@@ -25,6 +25,13 @@ func (b *Bot) Start() error {
 	return nil
 }
 
+const (
+	commandStart           = "start"
+	commandChoiceYandexGPT = "yandex"
+)
+
+var aiState string
+
 func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
 	for update := range updates {
 		if update.Message == nil {
@@ -35,7 +42,7 @@ func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
 			b.handleCommand(update.Message)
 			continue
 		}
-		b.handleMessage(update.Message)
+		b.handleMessage(update.Message, aiState)
 	}
 }
 
