@@ -1,0 +1,7 @@
+database:
+  user: "postgres"
+  password: "clown1488"
+  host: "localhost"
+  port: 5432
+  dbName: "telegramBot"
+  sslMode: "disable"

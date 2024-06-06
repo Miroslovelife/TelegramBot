@@ -3,11 +3,12 @@ package telegram
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/joho/godotenv"
+	"goTgExample/internal/storage"
 	"log"
 	"os"
 )
 
-func StartTelegramBot() {
+func StartTelegramBot(storage *storage.UserStorage) {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
@@ -21,8 +22,9 @@ func StartTelegramBot() {
 	}
 
 	bot.Debug = true
-	telegramBot := NewBot(bot)
+	telegramBot := NewBot(bot, storage)
 	if err := telegramBot.Start(); err != nil {
 		log.Panic(err)
 	}
+
 }

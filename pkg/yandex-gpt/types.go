@@ -18,9 +18,8 @@ type CompletionOptions struct {
 }
 
 type Message struct {
-	Role         string `json:"role"`
-	Text         string `json:"text"`
-	ModelVersion string `json:"modelVersion"`
+	Role string `json:"role"`
+	Text string `json:"text"`
 }
 
 // Response struct for unmarshal response from TgBot

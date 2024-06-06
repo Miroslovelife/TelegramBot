@@ -1,3 +1,4 @@
 .env
 .idea
 main.out
+/config/config.yaml

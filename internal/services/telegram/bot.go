@@ -2,15 +2,17 @@ package telegram
 
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"goTgExample/internal/storage"
 	"log"
 )
 
 type Bot struct {
 	bot *tgbotapi.BotAPI
+	us  *storage.UserStorage
 }
 
-func NewBot(bot *tgbotapi.BotAPI) *Bot {
-	return &Bot{bot: bot}
+func NewBot(bot *tgbotapi.BotAPI, userStorage *storage.UserStorage) *Bot {
+	return &Bot{bot: bot, us: userStorage}
 }
 
 func (b *Bot) Start() error {
@@ -28,21 +30,23 @@ func (b *Bot) Start() error {
 const (
 	commandStart           = "start"
 	commandChoiceYandexGPT = "yandex"
+	commandResetContext    = "reset"
 )
 
 var aiState string
 
 func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
 	for update := range updates {
+		userID := update.Message.From.ID
 		if update.Message == nil {
 			continue
 		}
 
 		if update.Message.IsCommand() {
-			b.handleCommand(update.Message)
+			b.handleCommand(update.Message, userID)
 			continue
 		}
-		b.handleMessage(update.Message, aiState)
+		b.handleMessage(update.Message, aiState, userID)
 	}
 }
 

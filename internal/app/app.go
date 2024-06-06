@@ -1,11 +1,24 @@
 package app
 
 import (
-	"goTgExample/internal/services/free_ai"
+	"fmt"
+	"goTgExample/internal/config"
 	"goTgExample/internal/services/telegram"
+	"goTgExample/internal/storage"
 )
 
 func Run() {
-	telegram.StartTelegramBot()
-	free_ai.FreeAiStart()
+	cfg, err := config.MustLoadConfig()
+	if err != nil {
+		fmt.Errorf("error loading config: %v", err)
+	}
+
+	pool, err := storage.ConnectDB(cfg.Database)
+	if err != nil {
+		fmt.Errorf("error connecting to database: %v", err)
+	}
+
+	userStorage := storage.NewUserStorage(pool)
+
+	telegram.StartTelegramBot(userStorage)
 }
